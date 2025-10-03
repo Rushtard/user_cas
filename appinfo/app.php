@@ -29,101 +29,68 @@ use OCA\UserCAS\Service\UserService;
 $app = new Application();
 $c = $app->getContainer();
 
-$requestUri = (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '');
+$requestUri = $_SERVER['REQUEST_URI'] ?? '';
 
-if (\OCP\App::isEnabled($c->getAppName()) && !\OC::$CLI) {
-
+// Désactivation du blocage CLI / PHP 8.4
+//if (\OCP_App::isEnabled($c->getAppName()) && !\OC::$CLI) {
+if (true) { // On force toujours l'initialisation, même en CLI
     /** @var UserService $userService */
     $userService = $c->query('UserService');
 
     /** @var AppService $appService */
     $appService = $c->query('AppService');
 
-    # Check for valid setup, only enable app if we have at least a CAS host, port and path
+    // Vérifie que le setup CAS est valide
     if ($appService->isSetupValid()) {
 
-        // Register User Backend
         $userService->registerBackend($c->query('Backend'));
 
-        $loginScreen = (strpos($requestUri, '/login') !== FALSE && strpos($requestUri, '/apps/user_cas/login') === FALSE);
-        $publicShare = (strpos($requestUri, '/index.php/s/') !== FALSE && $appService->arePublicSharesProtected());
+        $loginScreen = (strpos($requestUri, '/login') !== false && strpos($requestUri, '/apps/user_cas/login') === false);
+        $publicShare = (strpos($requestUri, '/index.php/s/') !== false && $appService->arePublicSharesProtected());
 
         if ($requestUri === '/' || $loginScreen || $publicShare) {
 
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { // POST is used for single logout requests
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
-                // Register UserHooks
                 $c->query('UserHooks')->register();
 
-                // URL params and redirect_url cookie
-                setcookie("user_cas_enforce_authentication", "0", null, '/');
-                $urlParams = '';
+                setcookie("user_cas_enforce_authentication", "0", 0, '/');
+                $urlParams = $_REQUEST['redirect_url'] ?? '';
+                setcookie("user_cas_redirect_url", $urlParams, 0, '/');
 
-                if (isset($_REQUEST['redirect_url'])) {
-
-                    $urlParams = $_REQUEST['redirect_url'];
-                    // Save the redirect_rul to a cookie
-                    $cookie = setcookie("user_cas_redirect_url", "$urlParams", null, '/');
-                }/*
-                else {
-
-                    setcookie("user_cas_redirect_url", '/', null, '/');
-                }*/
-
-                // Register alternative LogIn
                 $appService->registerLogIn();
-
-                /** @var boolean $isEnforced */
                 $isEnforced = $appService->isEnforceAuthentication($_SERVER['REMOTE_ADDR'], $requestUri);
 
-                // Check if public share, if yes, enforce regardless the enforce-flag
-                if($publicShare) {
+                if ($publicShare) {
                     $isEnforced = true;
                 }
 
-                // Check for enforced authentication
-                if ($isEnforced && (!isset($_COOKIE['user_cas_enforce_authentication']) || (isset($_COOKIE['user_cas_enforce_authentication']) && $_COOKIE['user_cas_enforce_authentication'] === '0'))) {
+                if ($isEnforced && (!isset($_COOKIE['user_cas_enforce_authentication']) || $_COOKIE['user_cas_enforce_authentication'] === '0')) {
 
                     /** @var LoggingService $loggingService */
                     $loggingService = $c->query("LoggingService");
+                    $loggingService->write(LoggingService::DEBUG, 'Enforce Authentication: ' . $isEnforced);
+                    setcookie("user_cas_enforce_authentication", '1', 0, '/');
 
-                    $loggingService->write(LoggingService::DEBUG, 'Enforce Authentication was: ' . $isEnforced);
-                    setcookie("user_cas_enforce_authentication", '1', null, '/');
-
-                    // Initialize app
                     if (!$appService->isCasInitialized()) {
-
                         try {
-
                             $appService->init();
-
-                            //if (!\phpCAS::isAuthenticated()) {
-
-                            $loggingService->write(LoggingService::DEBUG, 'Enforce Authentication was on and phpCAS is not authenticated. Redirecting to CAS Server.');
-
-                            $cookie = setcookie("user_cas_redirect_url", urlencode($requestUri), null, '/');
-
+                            $loggingService->write(LoggingService::DEBUG, 'Redirecting to CAS Server');
+                            setcookie("user_cas_redirect_url", urlencode($requestUri), 0, '/');
                             header("Location: " . $appService->linkToRouteAbsolute($c->getAppName() . '.authentication.casLogin'));
                             die();
-                            //}
-
                         } catch (\OCA\UserCAS\Exception\PhpCas\PhpUserCasLibraryNotFoundException $e) {
-
-                            $loggingService->write(LoggingService::ERROR, 'Fatal error with code: ' . $e->getCode() . ' and message: ' . $e->getMessage());
+                            $loggingService->write(LoggingService::ERROR, 'Fatal error: ' . $e->getMessage());
                         }
                     }
                 }
             }
         } else {
-
-            # Filter DAV requests
-            if(strpos($requestUri, '/remote.php') === FALSE && strpos($requestUri, '/webdav') === FALSE && strpos($requestUri, '/dav') === FALSE) {
-                // Register UserHooks
+            if (strpos($requestUri, '/remote.php') === false && strpos($requestUri, '/webdav') === false && strpos($requestUri, '/dav') === false) {
                 $c->query('UserHooks')->register();
             }
         }
     } else {
-
         $appService->unregisterLogIn();
     }
 }
