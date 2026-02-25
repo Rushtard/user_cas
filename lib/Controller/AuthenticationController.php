@@ -244,7 +244,7 @@ class AuthenticationController extends Controller
      *
      * @return TemplateResponse
      */
-    private function casError(\Exception $exception = NULL, $additionalErrorCode = 0)
+    private function casError(?\Exception $exception = null, int $additionalErrorCode = 0)
     {
         $params = [];
 
