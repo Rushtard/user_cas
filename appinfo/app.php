@@ -5,23 +5,28 @@ use OCA\UserCAS\Service\AppService;
 use OCA\UserCAS\Service\LoggingService;
 use OCA\UserCAS\Service\UserService;
 
-/** @var Application $app */
-$app = new Application();
-$c = $app->getContainer();
+// Si appelé depuis Application::boot(), $c est injecté.
+// Sinon fallback legacy (au cas où).
+if (!isset($c)) {
+    /** @var Application $app */
+    $app = new Application();
+    $c = $app->getContainer();
+}
+
+if (\OC::$CLI) {
+    return;
+}
 
 $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+\OCP\Log\logger('user_cas')->debug('CAS enforcement running on: ' . $requestUri);
 
-// Désactivation du blocage CLI / PHP 8.4
-//if (\OCP_App::isEnabled($c->getAppName()) && !\OC::$CLI) {
-if (true) { // On force toujours l'initialisation, même en CLI
-    /** @var UserService $userService */
-    $userService = $c->query('UserService');
+/** @var UserService $userService */
+$userService = $c->query('UserService');
 
-    /** @var AppService $appService */
-    $appService = $c->query('AppService');
+/** @var AppService $appService */
+$appService = $c->query('AppService');
 
-    // Vérifie que le setup CAS est valide
-    if ($appService->isSetupValid()) {
+if ($appService->isSetupValid()) {
 
         $userService->registerBackend($c->query('Backend'));
 
@@ -30,7 +35,7 @@ if (true) { // On force toujours l'initialisation, même en CLI
 
         if ($requestUri === '/' || $loginScreen || $publicShare) {
 
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
 
                 $c->query('UserHooks')->register();
 
@@ -39,7 +44,7 @@ if (true) { // On force toujours l'initialisation, même en CLI
                 setcookie("user_cas_redirect_url", $urlParams, 0, '/');
 
                 $appService->registerLogIn();
-                $isEnforced = $appService->isEnforceAuthentication($_SERVER['REMOTE_ADDR'], $requestUri);
+                $isEnforced = $appService->isEnforceAuthentication($_SERVER['REMOTE_ADDR'] ?? '', $requestUri);
 
                 if ($publicShare) {
                     $isEnforced = true;
@@ -73,4 +78,3 @@ if (true) { // On force toujours l'initialisation, même en CLI
     } else {
         $appService->unregisterLogIn();
     }
-}
