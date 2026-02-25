@@ -87,7 +87,7 @@ class CreateUser extends Command
         $mailer = \OC::$server->getMailer();
         $config = \OC::$server->getConfig();
         $userSession = \OC::$server->getUserSession();
-        $logger = \OC::$server->getLogger();
+        $logger = \OCP\Log\logger('user_cas');
         $urlGenerator = \OC::$server->getURLGenerator();
         $appManager = \OC::$server->getAppManager();
 
