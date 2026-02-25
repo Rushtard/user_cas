@@ -24,7 +24,7 @@
 namespace OCA\UserCAS\Service;
 
 use \OCP\IConfig;
-use \OCP\ILogger;
+use \Psr\Log\LoggerInterface;
 
 /**
  * Class LoggingService
@@ -71,7 +71,7 @@ class LoggingService
     private $config;
 
     /**
-     * @var \OCP\ILogger $logger
+     * @var \Psr\Log\LoggerInterface $logger
      */
     private $logger;
 
@@ -79,9 +79,9 @@ class LoggingService
      * LoggingService constructor.
      * @param string $appName
      * @param \OCP\IConfig $config
-     * @param \OCP\ILogger $logger
+     * @param \Psr\Log\LoggerInterface $logger
      */
-    public function __construct($appName, IConfig $config, ILogger $logger)
+    public function __construct($appName, IConfig $config, LoggerInterface $logger)
     {
 
         $this->appName = $appName;
@@ -95,7 +95,24 @@ class LoggingService
      */
     public function write($level, $message)
     {
-
-        $this->logger->log($level, $message, ['app' => $this->appName]);
+        switch ($level) {
+            case self::DEBUG:
+                $this->logger->debug($message, ['app' => $this->appName]);
+                break;
+            case self::INFO:
+                $this->logger->info($message, ['app' => $this->appName]);
+                break;
+            case self::WARN:
+                $this->logger->warning($message, ['app' => $this->appName]);
+                break;
+            case self::ERROR:
+                $this->logger->error($message, ['app' => $this->appName]);
+                break;
+            case self::FATAL:
+                $this->logger->emergency($message, ['app' => $this->appName]);
+                break;
+            default:
+                $this->logger->info($message, ['app' => $this->appName]);
+        }
     }
 }
