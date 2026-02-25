@@ -23,8 +23,12 @@
 
 namespace OCA\UserCAS\AppInfo;
 
+use OCP\AppFramework\Bootstrap\IBootstrap;
+use OCP\AppFramework\Bootstrap\IRegistrationContext;
+use OCP\AppFramework\Bootstrap\IBootContext;
 use \OCP\AppFramework\App;
 use \OCP\IContainer;
+use \Psr\Log\LoggerInterface;
 
 use OCA\UserCAS\Service\UserService;
 use OCA\UserCAS\Service\AppService;
@@ -45,7 +49,7 @@ use OCA\UserCAS\Service\LoggingService;
  *
  * @since 1.4.0
  */
-class Application extends App
+class Application extends App implements IBootstrap
 {
 
     /**
@@ -73,9 +77,8 @@ class Application extends App
         });
 
         $container->registerService('Logger', function (IContainer $c) {
-            return $c->query('ServerContainer')->getLogger();
+            return \OCP\Log\logger('user_cas');
         });
-
         /**
          * Register LoggingService
          */
@@ -193,5 +196,24 @@ class Application extends App
                 $c->query('Backend')
             );
         });
+    }
+        public function register(IRegistrationContext $context): void {
+        // rien pour l’instant
+    }
+
+    public function boot(IBootContext $context): void {
+        // Exécuter l’init CAS à chaque requête HTTP
+        if (\OC::$CLI) {
+            return;
+        }
+
+        // Fournir le container à app.php pour éviter qu’il recrée Application()
+        $c = $this->getContainer();
+	if (defined('USER_CAS_ENFORCE_BOOTED')) {
+	    return;
+	}
+	define('USER_CAS_ENFORCE_BOOTED', true);
+        // Inclure appinfo/app.php (ton code existant d’enforcement)
+        require __DIR__ . '/../../appinfo/app.php';
     }
 }
