@@ -8,7 +8,8 @@
     <screenshot>https://raw.githubusercontent.com/felixrupp/user_cas/master/.github/SCREENSHOTS/splashscreen.png</screenshot>
     <author>Felix Rupp</author>
     <namespace>UserCAS</namespace>
-    <version>1.10.0</version>
+    <version>1.11.0</version>
+    <bootstrap>OCA\UserCAS\AppInfo\Application</bootstrap>
     <types>
         <prelogin/>
         <authentication/>
@@ -16,17 +17,17 @@
 
     <category>security</category>
 
-    <website>https://github.com/felixrupp/user_cas</website>
+    <website>https://github.com/Rushtard/user_cas</website>
 
     <documentation>
-        <user>https://github.com/felixrupp/user_cas/blob/master/README.md</user>
-        <admin>https://github.com/felixrupp/user_cas/blob/master/README.md</admin>
-        <developer>https://github.com/felixrupp/user_cas/blob/master/README.md</developer>
+        <user>https://github.com/Rushtard/user_cas/blob/master/README.md</user>
+        <admin>https://github.com/Rushtard/user_cas/blob/master/README.md</admin>
+        <developer>https://github.com/Rushtard/user_cas/blob/master/README.md</developer>
     </documentation>
 
-    <bugs>https://github.com/felixrupp/user_cas/issues</bugs>
+    <bugs>https://github.com/Rushtard/user_cas/issues</bugs>
 
-    <repository type="git">https://github.com/felixrupp/user_cas.git</repository>
+    <repository type="git">https://github.com/Rushtard/user_cas.git</repository>
 
     <dependencies>
         <owncloud min-version="10.0" max-version="10.10"/>
