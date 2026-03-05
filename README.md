@@ -1,6 +1,12 @@
 
 # user_cas
 
+This repository is a maintained fork of the original project:
+
+https://github.com/felixrupp/user_cas
+
+It contains compatibility fixes and improvements for newer versions of Nextcloud.
+
 ## Introduction
 
 `user_cas` adds **CAS authentication support** to Nextcloud / ownCloud using the **phpCAS** library.
