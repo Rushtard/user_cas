@@ -182,6 +182,8 @@ class Application extends App implements IBootstrap {
 		if (\OC::$CLI) { 
 			return; 
 		} 
+		// Charge l'autoload / phpCAS une bonne fois pour toutes
+    	require_once __DIR__ . '/../bootstrap.php';
 		// Exécuter l’enforcement CAS à chaque requête HTTP 
 		\OCA\UserCAS\Bootstrap\Enforce::run($this->getContainer());
 	}

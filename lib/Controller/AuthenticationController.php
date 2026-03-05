@@ -170,8 +170,10 @@ class AuthenticationController extends Controller
                         return new RedirectResponse($location);
                     } else { # Not authenticated against owncloud
 
-                        $this->loggingService->write(\OCA\UserCas\Service\LoggingService::DEBUG, "phpCAS user has not been authenticated against owncloud.");
-
+                        $this->loggingService->write(\OCA\UserCas\Service\LoggingService::ERROR,
+                            "NC login failed for CAS userId='{$userName}'. " .
+                            "CAS getUser()='" . (\phpCAS::isAuthenticated() ? \phpCAS::getUser() : 'not-auth') . "'"
+                        );
                         return $this->casError(null, \OCP\AppFramework\Http::STATUS_FORBIDDEN);
                     }
                 } else { # Not authenticated against CAS
