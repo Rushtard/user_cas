@@ -1,6 +1,6 @@
 ![License](https://img.shields.io/badge/license-AGPL%203-blue)
-![Nextcloud](https://img.shields.io/badge/Nextcloud-21--33-orange)
-![PHP](https://img.shields.io/badge/PHP-7.3--8.4-purple)
+![Nextcloud](https://img.shields.io/badge/Nextcloud-31--33-orange)
+![PHP](https://img.shields.io/badge/PHP-8.0--8.4-purple)
 
 # user_cas
 
@@ -34,9 +34,9 @@ which is used as the CAS **service URL**.
 
 | Component | Supported |
 |-----------|-----------|
-| Nextcloud | ≥ 21 – 33 |
-| ownCloud  | ≥ 10 |
-| PHP       | ≥ 7.3 (tested up to PHP 8.4) |
+| Nextcloud | ≥ 31 – 33 |
+| ownCloud  | ≥ 10 - not tested |
+| PHP       | ≥ 8.0 (tested up to PHP 8.4) |
 
 ---
 
