@@ -254,6 +254,15 @@ These commands support additional parameters such as:
 
 ---
 
+# Versions
+
+| Version | Notes |
+|-------|------|
+| 1.11.2 | Fix Nextcloud 33 compatibility and CAS authentication issues |
+| 1.11.1 | Previous compatibility adjustments |
+| 1.11.0 | Initial maintained fork version - for Nextcloud 31 |
+
+
 # License
 
 AGPL v3 or later
