@@ -33,7 +33,7 @@ which is used as the CAS **service URL**.
 |-----------|-----------|
 | Nextcloud | ≥ 21 – 33 |
 | ownCloud  | ≥ 10 |
-| PHP       | ≥ 7.3 (tested up to PHP 8.x) |
+| PHP       | ≥ 7.3 (tested up to PHP 8.4) |
 
 ---
 
