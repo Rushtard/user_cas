@@ -103,10 +103,10 @@ Important configuration values:
 
 | Setting | Description |
 |-------|-------------|
-CAS Server Version | Usually `3.0`
+CAS Server Version | Usually `2.0` or `3.0`
 CAS Server Hostname | Hostname of your CAS server
 CAS Server Port | Usually `443`
-CAS Server Path | Often `/cas`
+CAS Server Path | Often `/cas` of `/sso`
 Service URL | Must end with `/apps/user_cas/login`
 
 Example:
